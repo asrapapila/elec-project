@@ -8,6 +8,46 @@
 import SwiftUI
 import MapKit
 
+struct InitialView: View {
+    var body: some View {
+        VStack {
+            Text("CULTURATI")
+                .font(.largeTitle)
+                .fontWeight(.bold)
+                .foregroundColor(.purple)
+                .padding(.bottom, 70)
+
+            Text("Choose an Option")
+                .font(.headline)
+                .padding(.top, 20)
+
+            NavigationLink(destination: ContentView()) {
+                Text("Go to Map View")
+                    .padding()
+                    .background(Color.blue)
+                    .foregroundColor(.white)
+                    .cornerRadius(10)
+            }
+
+            NavigationLink(destination: ContentPage()) {
+                Text("Go to Content Page")
+                    .padding()
+                    .background(Color.green)
+                    .foregroundColor(.white)
+                    .cornerRadius(10)
+            }
+        }
+    }
+}
+
+struct InitialView_Previews: PreviewProvider {
+    static var previews: some View {
+        NavigationView {
+            InitialView()
+        }
+    }
+}
+
 struct ContentView: View {
     @State private var mapView = MKMapView()
     @State private var annotations: [MKPointAnnotation] = []
@@ -34,10 +74,9 @@ struct ContentView: View {
         }
     }
 
-    // MARK: - Setup Methods
     private func setupMap() {
         let region = MKCoordinateRegion(
-            center: CLLocationCoordinate2D(latitude: 37.7749, longitude: -122.4194), // San Francisco
+            center: CLLocationCoordinate2D(latitude: 37.7749, longitude: -122.4194),
             span: MKCoordinateSpan(latitudeDelta: 0.1, longitudeDelta: 0.1)
         )
         mapView.setRegion(region, animated: true)
@@ -56,6 +95,26 @@ struct ContentView: View {
             circle.title = "\(data.level)"
             overlays.append(circle)
         }
+    }
+}
+
+struct ContentView_Previews: PreviewProvider {
+    static var previews: some View {
+        ContentView()
+    }
+}
+
+struct ContentPage: View {
+    var body: some View {
+        Text("This is the Content Page")
+            .font(.largeTitle)
+            .padding()
+    }
+}
+
+struct ContentPage_Previews: PreviewProvider {
+    static var previews: some View {
+        ContentPage()
     }
 }
 
@@ -132,7 +191,6 @@ struct MapViewRepresentable: UIViewRepresentable {
             }
         }
 
-
         func mapView(_ mapView: MKMapView, rendererFor overlay: MKOverlay) -> MKOverlayRenderer {
             if let circleOverlay = overlay as? MKCircle {
                 let renderer = MKCircleRenderer(circle: circleOverlay)
@@ -153,11 +211,5 @@ struct MapViewRepresentable: UIViewRepresentable {
             }
             return MKOverlayRenderer()
         }
-    }
-}
-
-struct ContentView_Previews: PreviewProvider {
-    static var previews: some View {
-        ContentView()
     }
 }
