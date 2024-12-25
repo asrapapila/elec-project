@@ -496,11 +496,19 @@ struct Exhibit {
 struct PreferencesView: View {
     @Binding var preferences: [String: Bool]
 
-    var body: some View {
         Form {
-            Toggle("Would you like to see the Ship Exhibition?", isOn: binding(for: "Ship"))
-            Toggle("Would you like to see the Dinosaur Exhibition?", isOn: binding(for: "Dinosaur"))
-            Toggle("Would you like to see the Art Gallery?", isOn: binding(for: "Art"))
+            Toggle("Would you like to learn more about Atatürk?", isOn: binding(for: "Atatürk"))
+            Toggle("Would you like to see the railway transports and trains?", isOn: binding(for: "Train"))
+            Toggle("Are you interested in aircrafts?", isOn: binding(for: "Plane"))
+            Toggle("Would you like to see the highway transports and heavy vehicles?", isOn: binding(for: "Car"))
+            Toggle("Would you like to see the toys collection?", isOn: binding(for: "Toys"))
+            Toggle("Would you like to have a periodical experience?", isOn: binding(for: "Period"))
+            Toggle("Are you interested in scientific gadgets?", isOn: binding(for: "Science"))
+            Toggle("Are you interested in sea transportations and vessels?", isOn: binding(for: "Ship"))
+            Toggle("Are you interested in history of communication?", isOn: binding(for: "Comms"))
+            Toggle("Would you like to see the motors collection?", isOn: binding(for: "Motor"))
+            Toggle("Would you like to see the special collections?", isOn: binding(for: "Special"))
+            Toggle("Would you like to see the Fenerbahçe ferry?", isOn: binding(for: "Ferry"))
         }
         .navigationTitle("Preferences")
     }
