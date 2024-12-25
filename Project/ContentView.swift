@@ -18,9 +18,9 @@ extension CLLocationCoordinate2D: @retroactive Equatable {
 struct InitialView: View {
     @State private var preferences: [String: Bool] = [
         "Atatürk": false, "Train": false, "Plane": false, "Car": false, "Toys": false,
-                "Period": false, "Science": false, "Ship": false, "Comms": false, "Motor": false,
-                "Ferry": false
-    ]
+        "Period": false, "Science": false, "Ship": false, "Comms": false, "Motor": false,
+        "Ferry": false
+           ]
 
     var body: some View {
         VStack {
@@ -75,7 +75,9 @@ struct MapView: UIViewRepresentable {
 
     func makeUIView(context: Context) -> MKMapView {
         let mapView = MKMapView()
-        mapView.delegate = context.coordinator
+        let coordinator = context.coordinator
+        coordinator.mapView = mapView // Pass mapView reference to Coordinator
+        mapView.delegate = coordinator
 
         // Center the map on Rahmi Koç Museum
         let museumCenter = CLLocationCoordinate2D(latitude: 41.04241, longitude: 28.94881)
@@ -166,16 +168,25 @@ struct MapView: UIViewRepresentable {
             if annotationView == nil {
                 annotationView = MKMarkerAnnotationView(annotation: annotation, reuseIdentifier: identifier)
                 annotationView?.canShowCallout = true
-                annotationView?.markerTintColor = .brown // Default color for unselected pins
             } else {
                 annotationView?.annotation = annotation
             }
 
-            if museumAnnotation.isSelected {
+            // Customize appearance based on crowdedness
+            switch museumAnnotation.crowdednessLevel {
+            case "High":
                 annotationView?.markerTintColor = .red
+            case "Medium":
+                annotationView?.markerTintColor = .orange
+            default:
+                annotationView?.markerTintColor = .green
+            }
+
+            // Highlight selected annotations
+            if museumAnnotation.isSelected {
+                annotationView?.markerTintColor = .blue
                 annotationView?.glyphText = "★"
             } else {
-                annotationView?.markerTintColor = .brown
                 annotationView?.glyphText = nil
             }
 
@@ -184,6 +195,33 @@ struct MapView: UIViewRepresentable {
 
         func mapView(_ mapView: MKMapView, didSelect view: MKAnnotationView) {
             guard let annotation = view.annotation as? MuseumSectionAnnotation else { return }
+
+            if annotation.crowdednessLevel == "High" {
+                // Show warning alert
+                showCrowdednessWarning(for: annotation, mapView: mapView)
+            } else {
+                toggleSelection(for: annotation, in: mapView)
+            }
+        }
+
+        private func showCrowdednessWarning(for annotation: MuseumSectionAnnotation, mapView: MKMapView) {
+            let alert = UIAlertController(
+                title: "Warning",
+                message: "\(annotation.title ?? "This location") is crowded now. Do you still want to proceed?",
+                preferredStyle: .alert
+            )
+            alert.addAction(UIAlertAction(title: "Yes", style: .default, handler: { _ in
+                self.toggleSelection(for: annotation, in: mapView)
+            }))
+            alert.addAction(UIAlertAction(title: "No", style: .cancel))
+            
+            // Present the alert
+            if let viewController = mapView.window?.rootViewController {
+                viewController.present(alert, animated: true)
+            }
+        }
+
+        private func toggleSelection(for annotation: MuseumSectionAnnotation, in mapView: MKMapView) {
             annotation.isSelected.toggle()
 
             if annotation.isSelected {
@@ -192,12 +230,13 @@ struct MapView: UIViewRepresentable {
                 selectedAnnotations.removeAll { $0 === annotation }
             }
 
-            self.mapView = mapView // Save a reference to the map view
             updateRoute()
 
+            // Refresh annotation appearance
             mapView.removeAnnotation(annotation)
             mapView.addAnnotation(annotation)
         }
+
     }
 }
 
@@ -206,19 +245,22 @@ class MuseumSectionAnnotation: NSObject, MKAnnotation {
     let title: String?
     let subtitle: String?
     //var sectionDescription: String
-    var isSelected: Bool = false // New property
+    var isSelected: Bool = false
+    var crowdednessLevel: String
 
     init(coordinate: CLLocationCoordinate2D, title: String?, subtitle: String?) {
         self.coordinate = coordinate
         self.title = title
         self.subtitle = subtitle
         //self.sectionDescription = sectionDescription
+        self.crowdednessLevel = ["Low", "Medium", "High"].randomElement()! // Assign random level
     }
 }
 
 struct ContentView: View {
     @State private var zoomLevel = MKCoordinateSpan(latitudeDelta: 0.002, longitudeDelta: 0.002)
     @State private var currentFloor: Floor = .groundLevel
+    @State private var showLegend = false // State to toggle the legend view
 
     enum Floor {
         case groundLevel, firstFloor, basementLevel
@@ -315,6 +357,165 @@ struct ContentView: View {
             return basementLevelAnnotations
         }
     }
+    
+    struct LegendView: View {
+        @Environment(\.dismiss) var dismiss // Access the dismiss environment action
+        
+        var body: some View {
+            NavigationView {
+                List {
+                    NavigationLink("MUSTAFA V. KOÇ BİNASI", destination: MustafaKocView())
+                    NavigationLink("TERSHANE", destination: TershaneView())
+                }
+                .navigationTitle("Legend")
+                .toolbar {
+                    ToolbarItem(placement: .navigationBarTrailing) {
+                        Button("Close") {
+                            dismiss() // Dismiss the sheet
+                        }
+                    }
+                }
+            }
+        }
+    }
+
+    struct MustafaKocView: View {
+        var body: some View {
+            NavigationView {
+                List {
+                    NavigationLink("ALT KAT", destination: MustafaKocAlt())
+                    NavigationLink("GİRİŞ KATI", destination: MustafaKocGiris())
+                    NavigationLink("ÜST KAT", destination: MustafaKocUst())
+                }
+                .navigationTitle("MUSTAFA V. K0Ç")
+            }
+        }
+    }
+
+    struct TershaneView: View {
+        var body: some View {
+            NavigationView {
+                List {
+                    NavigationLink("GİRİŞ KATI", destination: TershaneGiris())
+                    NavigationLink("ÜST KAT", destination: TershaneUst())
+                    NavigationLink("AÇIK TEŞHİR ALANI", destination: TershaneAcik())
+                }
+                .navigationTitle("TERSHANE")
+            }
+        }
+    }
+    
+    struct MustafaKocAlt: View {
+        var body: some View {
+            List {
+                Text("L15 : Havacılık")
+                Text("L16 : Restorasyon Atölyesi")
+                Text("L17 : Lokomotif ve Otomobil Modelleri")
+                Text("L18 : Oyuncaklar")
+                Text("L19 : Denizcilik Modelleri")
+                Text("L20 : Sinema Bölümü")
+                Text("L21 : Matbaa Makineleri")
+            }
+            .navigationTitle("ALT KAT")
+        }
+    }
+    
+    struct MustafaKocGiris: View {
+        var body: some View {
+            List {
+                Text("L01 : Buharlı Makine Modelleri")
+                Text("L02 : Buharlı Gemi Makine Modelleri")
+                Text("L03 : Sıcak Hava ve İçten Yanmalı Motor Modelleri")
+                Text("L04 : Buharlı Makine Modelleri")
+                Text("L05 : Buharlı Silindirler ve Çekici Makine Modelleri")
+                Text("L06 : Buharlı Makine Modelleri")
+                Text("L07 : Lokomotif Modelleri ve Kalender Vapuru Makinesi")
+            }
+            .navigationTitle("GİRİŞ KATI")
+        }
+    }
+    
+    struct MustafaKocUst: View {
+        var body: some View {
+            List {
+                Text("L08 - L11 : Bilimsel Aletler")
+                Text("L12 - L14 : İletişim Aletleri")
+            }
+            .navigationTitle("ÜST KAT")
+        }
+    }
+    
+    struct TershaneGiris: View {
+        var body: some View {
+            List {
+                Text("T02 : Sualtı Bölümü")
+                Text("T03 : Astronomi / Enerji / Fen Atölyeleri")
+                Text("T06 : Erdoğan Gönül Galerisi | Otomobiller")
+                Text("T11 : Dr. Bülent Bulgurlu Galerisi | Otomobiller")
+                Text("T12 : Buhar Makineleri | Dizel Motorları")
+                Text("T13 : Araser Zeytinyağı Fabrikası")
+                Text("T14 : Marangozhane")
+                Text("T15 : Gemi Makineleri")
+                Text("T16 : Tarihi Kızak")
+                Text("T17 : Nostaljik Dükkanlar")
+                Text("T17a : Haliç Oyuncakçısı")
+                Text("T17b : Gemi Donatımı")
+                Text("T17c : Dakik Saat")
+                Text("T17d : Dövme Demir")
+                Text("T17e : Ismarlama Kundura")
+                Text("T17f : Fecri Aletler")
+                Text("T17g : Şifa Eczanesi")
+                Text("T18 : Gemi Buhar Makinesi")
+                Text("T19 : Denizcilik")
+                Text("T19a : Balıkçı Barınağı")
+                Text("T19b : Tekneler")
+                Text("T19c : Kosta Usta Motor Tamir Atölyesi")
+                Text("T19d : Ayvansaray Sandal Yapım Atölyesi")
+                Text("T20 : Aydın Çubukçu Galerisi - Raylı Ulașım")
+            }
+            .navigationTitle("GİRİŞ KATI")
+        }
+    }
+    
+    struct TershaneUst: View {
+        var body: some View {
+            List {
+                Text("T01 : Rahmi M. Koç Galerisi Atatürk Koleksiyonu")
+                Text("T04 : Renkli Matematik Dünyası")
+                Text("T05 : Anasıfı Eğitim Atölyesi")
+                Text("T07 : Motosikletler")
+                Text("T08 : Bebek Arabaları")
+                Text("T09 : Bisikletler")
+                Text("T10 : Kağnılar | At Arabaları | Kızaklar")
+                Text("T14 : Torna Tezgahları")
+                Text("T19e : Kayıklar | Dıştan Takma Motorlar")
+            }
+            .navigationTitle("ÜST KAT")
+        }
+    }
+    
+    struct TershaneAcik: View {
+        var body: some View {
+            List {
+                Text("Anadol Otomobiller")
+                Text("Yarış Otomobilleri")
+                Text("İtfaiye Arabaları")
+                Text("Traktörler")
+                Text("Sovyet Otomobilleri")
+                Text("Dört Çekerli Araçlar")
+                Text("Uçaklar")
+                Text("B-24 Harley's Harem")
+                Text("Jet Provost")
+                Text("Hamsa Jet")
+                Text("Eğitim Uçağı")
+                Text("Tarım Uçağı")
+                Text("Atlıkarınca")
+                Text("Hasköy Sütlüce Demiryolu İstasyonu")
+                Text("Seka Vinci")
+            }
+            .navigationTitle("AÇIK TEŞHİR ALANI")
+        }
+    }
 
     var body: some View {
         ZStack {
@@ -386,6 +587,26 @@ struct ContentView: View {
                 }
                 .padding()
             }
+            // Legend Button
+                       VStack {
+                           Spacer()
+                           HStack {
+                               Spacer()
+                               Button(action: {
+                                   showLegend = true
+                               }) {
+                                   Text("Legend")
+                                       .padding()
+                                       .background(Color.black.opacity(0.7))
+                                       .foregroundColor(.white)
+                                       .clipShape(Capsule())
+                               }
+                               .padding()
+                           }
+                       }
+                   }
+                   .sheet(isPresented: $showLegend) {
+                       LegendView()
         }
     }
 }
@@ -492,34 +713,35 @@ struct Exhibit {
     let coordinate: CLLocationCoordinate2D
 }
 
+
 struct PreferencesView: View {
-    @Binding var preferences: [String: Bool]
-    
-    var body: some View {
-        Form {
-            Toggle("Would you like to learn more about Atatürk?", isOn: binding(for: "Atatürk"))
-            Toggle("Would you like to see the railway transports and trains?", isOn: binding(for: "Train"))
-            Toggle("Are you interested in aircrafts?", isOn: binding(for: "Plane"))
-            Toggle("Would you like to see the highway transports and heavy vehicles?", isOn: binding(for: "Car"))
-            Toggle("Would you like to see the toys collection?", isOn: binding(for: "Toys"))
-            Toggle("Would you like to have a periodical experience?", isOn: binding(for: "Period"))
-            Toggle("Are you interested in scientific gadgets?", isOn: binding(for: "Science"))
-            Toggle("Are you interested in sea transportations and vessels?", isOn: binding(for: "Ship"))
-            Toggle("Are you interested in history of communication?", isOn: binding(for: "Comms"))
-            Toggle("Would you like to see the motors collection?", isOn: binding(for: "Motor"))
-            Toggle("Would you like to see the special collections?", isOn: binding(for: "Special"))
-            Toggle("Would you like to see the Fenerbahçe ferry?", isOn: binding(for: "Ferry"))
-        }
-        .navigationTitle("Preferences")
-    }
-    
+            @Binding var preferences: [String: Bool]
+            
+            var body: some View {
+                Form {
+                    Toggle("Would you like to learn more about Atatürk?", isOn: binding(for: "Atatürk"))
+                    Toggle("Would you like to see the railway transports and trains?", isOn: binding(for: "Train"))
+                    Toggle("Are you interested in aircrafts?", isOn: binding(for: "Plane"))
+                    Toggle("Would you like to see the highway transports and heavy vehicles?", isOn: binding(for: "Car"))
+                    Toggle("Would you like to see the toys collection?", isOn: binding(for: "Toys"))
+                    Toggle("Would you like to have a periodical experience?", isOn: binding(for: "Period"))
+                    Toggle("Are you interested in scientific gadgets?", isOn: binding(for: "Science"))
+                    Toggle("Are you interested in sea transportations and vessels?", isOn: binding(for: "Ship"))
+                    Toggle("Are you interested in history of communication?", isOn: binding(for: "Comms"))
+                    Toggle("Would you like to see the motors collection?", isOn: binding(for: "Motor"))
+                    Toggle("Would you like to see the special collections?", isOn: binding(for: "Special"))
+                    Toggle("Would you like to see the Fenerbahçe ferry?", isOn: binding(for: "Ferry"))
+                }
+                .navigationTitle("Preferences")
+            }
+
     private func binding(for key: String) -> Binding<Bool> {
         Binding(
             get: { preferences[key] ?? false },
             set: { preferences[key] = $0 }
         )
     }
-    
+}
 
 struct MapViewRepresentable: UIViewRepresentable {
     @Binding var mapView: MKMapView
