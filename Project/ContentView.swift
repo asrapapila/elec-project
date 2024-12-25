@@ -69,6 +69,7 @@ struct InitialView_Previews: PreviewProvider {
     }
 }
 
+
 struct MapView: UIViewRepresentable {
     let annotations: [MuseumSectionAnnotation]
     @Binding var zoomLevel: MKCoordinateSpan
@@ -244,7 +245,6 @@ class MuseumSectionAnnotation: NSObject, MKAnnotation {
     let coordinate: CLLocationCoordinate2D
     let title: String?
     let subtitle: String?
-    //var sectionDescription: String
     var isSelected: Bool = false
     var crowdednessLevel: String
 
@@ -252,10 +252,12 @@ class MuseumSectionAnnotation: NSObject, MKAnnotation {
         self.coordinate = coordinate
         self.title = title
         self.subtitle = subtitle
-        //self.sectionDescription = sectionDescription
         self.crowdednessLevel = ["Low", "Medium", "High"].randomElement()! // Assign random level
     }
 }
+
+
+
 
 struct ContentView: View {
     @State private var zoomLevel = MKCoordinateSpan(latitudeDelta: 0.002, longitudeDelta: 0.002)
