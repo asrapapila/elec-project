@@ -17,9 +17,9 @@ extension CLLocationCoordinate2D: @retroactive Equatable {
 
 struct InitialView: View {
     @State private var preferences: [String: Bool] = [
-        "Ship": false,
-        "Dinosaur": false,
-        "Art": false
+        "Atatürk": false, "Train": false, "Plane": false, "Car": false, "Toys": false,
+                "Period": false, "Science": false, "Ship": false, "Comms": false, "Motor": false,
+                "Ferry": false
     ]
 
     var body: some View {
@@ -492,10 +492,10 @@ struct Exhibit {
     let coordinate: CLLocationCoordinate2D
 }
 
-
 struct PreferencesView: View {
     @Binding var preferences: [String: Bool]
-
+    
+    var body: some View {
         Form {
             Toggle("Would you like to learn more about Atatürk?", isOn: binding(for: "Atatürk"))
             Toggle("Would you like to see the railway transports and trains?", isOn: binding(for: "Train"))
@@ -512,14 +512,14 @@ struct PreferencesView: View {
         }
         .navigationTitle("Preferences")
     }
-
+    
     private func binding(for key: String) -> Binding<Bool> {
         Binding(
             get: { preferences[key] ?? false },
             set: { preferences[key] = $0 }
         )
     }
-}
+    
 
 struct MapViewRepresentable: UIViewRepresentable {
     @Binding var mapView: MKMapView
