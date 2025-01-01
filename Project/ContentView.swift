@@ -717,25 +717,37 @@ struct Exhibit {
 
 
 struct PreferencesView: View {
-            @Binding var preferences: [String: Bool]
-            
-            var body: some View {
-                Form {
-                    Toggle("Would you like to learn more about Atatürk?", isOn: binding(for: "Atatürk"))
-                    Toggle("Would you like to see the railway transports and trains?", isOn: binding(for: "Train"))
-                    Toggle("Are you interested in aircrafts?", isOn: binding(for: "Plane"))
-                    Toggle("Would you like to see the highway transports and heavy vehicles?", isOn: binding(for: "Car"))
-                    Toggle("Would you like to see the toys collection?", isOn: binding(for: "Toys"))
-                    Toggle("Would you like to have a periodical experience?", isOn: binding(for: "Period"))
-                    Toggle("Are you interested in scientific gadgets?", isOn: binding(for: "Science"))
-                    Toggle("Are you interested in sea transportations and vessels?", isOn: binding(for: "Ship"))
-                    Toggle("Are you interested in history of communication?", isOn: binding(for: "Comms"))
-                    Toggle("Would you like to see the motors collection?", isOn: binding(for: "Motor"))
-                    Toggle("Would you like to see the special collections?", isOn: binding(for: "Special"))
-                    Toggle("Would you like to see the Fenerbahçe ferry?", isOn: binding(for: "Ferry"))
-                }
-                .navigationTitle("Preferences")
+    @Binding var preferences: [String: Bool]
+    @State private var showSuggestedRooms = false // New state to control navigation
+    
+    var body: some View {
+        NavigationView {
+            Form {
+                Toggle("Would you like to learn more about Atatürk?", isOn: binding(for: "Atatürk"))
+                Toggle("Would you like to see the railway transports and trains?", isOn: binding(for: "Train"))
+                Toggle("Are you interested in aircrafts?", isOn: binding(for: "Plane"))
+                Toggle("Would you like to see the highway transports and heavy vehicles?", isOn: binding(for: "Car"))
+                Toggle("Would you like to see the toys collection?", isOn: binding(for: "Toys"))
+                Toggle("Would you like to have a periodical experience?", isOn: binding(for: "Period"))
+                Toggle("Are you interested in scientific gadgets?", isOn: binding(for: "Science"))
+                Toggle("Are you interested in sea transportations and vessels?", isOn: binding(for: "Ship"))
+                Toggle("Are you interested in history of communication?", isOn: binding(for: "Comms"))
+                Toggle("Would you like to see the motors collection?", isOn: binding(for: "Motor"))
+                Toggle("Would you like to see the Fenerbahçe ferry?", isOn: binding(for: "Ferry"))
             }
+            .navigationTitle("Preferences")
+            .toolbar {
+                ToolbarItem(placement: .navigationBarTrailing) {
+                    Button("OK") {
+                        showSuggestedRooms = true
+                    }
+                }
+            }
+            .sheet(isPresented: $showSuggestedRooms) {
+                SuggestedRoomsView(preferences: preferences)
+            }
+        }
+    }
 
     private func binding(for key: String) -> Binding<Bool> {
         Binding(
@@ -744,6 +756,39 @@ struct PreferencesView: View {
         )
     }
 }
+
+struct SuggestedRoomsView: View {
+    let preferences: [String: Bool]
+    
+    // Map preferences to suggested rooms
+    private var suggestedRooms: [String] {
+        var rooms: [String] = []
+        
+        if preferences["Atatürk"] == true { rooms.append("T01") }
+        if preferences["Train"] == true { rooms.append(contentsOf: ["L17", "L01", "L04", "L06", "L07", "T20"]) }
+        if preferences["Plane"] == true { rooms.append(contentsOf: ["L15", "DC-3 yolcu uçağı", "Açık Teşhir alanı", "b-24 Liberatör", "F-104 savaş uçağı"]) }
+        if preferences["Car"] == true { rooms.append(contentsOf: ["L17", "L05", "T06", "T11", "T07", "T09", "T10"]) }
+        if preferences["Toys"] == true { rooms.append("L18") }
+        if preferences["Period"] == true { rooms.append(contentsOf: ["L16", "L20", "T13", "T14", "T17(A-G)"]) }
+        if preferences["Science"] == true { rooms.append(contentsOf: ["L08", "L09", "L10", "L11", "T03"]) }
+        if preferences["Ship"] == true { rooms.append(contentsOf: ["L19", "L02", "L07", "T02", "T15", "T18", "T19(A-D)"]) }
+        if preferences["Comms"] == true { rooms.append(contentsOf: ["L12", "L13", "L14", "L21"]) }
+        if preferences["Motor"] == true { rooms.append(contentsOf: ["L03", "T12", "T19E"]) }
+        if preferences["Ferry"] == true { rooms.append("Fenerbahçe Vapuru") }
+        
+        return rooms
+    }
+    
+    var body: some View {
+        NavigationView {
+            List(suggestedRooms, id: \.self) { room in
+                Text(room)
+            }
+            .navigationTitle("Suggested Rooms")
+        }
+    }
+}
+
 
 struct MapViewRepresentable: UIViewRepresentable {
     @Binding var mapView: MKMapView
