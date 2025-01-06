@@ -2,8 +2,9 @@
 //  ContentView.swift
 //  Project
 //
-//  Created by Asra Papila on 20.11.2024.
+//  Created by Talin Harun on 06.01.2025.
 //
+
 
 import SwiftUI
 import MapKit
@@ -15,52 +16,67 @@ extension CLLocationCoordinate2D: @retroactive Equatable {
     }
 }
 
+extension Color {
+    static let lightBrown = Color(red: 0.87, green: 0.7, blue: 0.5) // Light Brown
+    static let burgundy = Color(red: 0.5, green: 0.0, blue: 0.13) // Custom Burgundy Color
+}
+
+
 struct InitialView: View {
     @State private var preferences: [String: Bool] = [
         "Atatürk": false, "Train": false, "Plane": false, "Car": false, "Toys": false,
         "Period": false, "Science": false, "Ship": false, "Comms": false, "Motor": false,
         "Ferry": false
-           ]
+    ]
 
     var body: some View {
-        VStack {
-            Text("Koç Museum")
-                .font(.largeTitle)
-                .fontWeight(.bold)
-                .foregroundColor(.purple)
-                .padding(.bottom, 70)
+        NavigationView {
+            VStack(spacing: 10) {
+                Spacer()
 
-            Text("Choose an Option")
-                .font(.headline)
-                .padding(.top, 20)
+                Text("Rahmi Koç Museum Navigation App")
+                    .font(.system(size: 45, weight: .bold))
+                    .foregroundColor(Color.burgundy)
+                    .multilineTextAlignment(.center)
 
-            NavigationLink(destination: ContentView()) {
-                Text("Go to Map View")
-                    .padding()
-                    .background(Color.blue)
-                    .foregroundColor(.white)
-                    .cornerRadius(10)
-            }
+                Spacer()
 
-            NavigationLink(destination: PreferencesView(preferences: $preferences)) {
-                Text("Set Preferences")
-                    .padding()
-                    .background(Color.green)
-                    .foregroundColor(.white)
-                    .cornerRadius(10)
+                VStack(spacing: 15) {
+                    NavigationLink(destination: ContentView()) {
+                        Text("Go to Map View")
+                            .frame(maxWidth: .infinity)
+                            .padding()
+                            .background(Color.burgundy)
+                            .foregroundColor(.white)
+                            .cornerRadius(12)
+                    }
+
+                    NavigationLink(destination: PreferencesView(preferences: $preferences)) {
+                        Text("Set Preferences")
+                            .frame(maxWidth: .infinity)
+                            .padding()
+                            .background(Color.burgundy)
+                            .foregroundColor(.white)
+                            .cornerRadius(12)
+                    }
+
+                    NavigationLink(destination: ContentPage()) {
+                        Text("Go to Content Page")
+                            .frame(maxWidth: .infinity)
+                            .padding()
+                            .background(Color.burgundy)
+                            .foregroundColor(.white)
+                            .cornerRadius(12)
+                    }
+                }
+                .padding(.horizontal, 30)
+
+                Spacer()
             }
-            
-            NavigationLink(destination: ContentPage()) {
-                Text("Go to Content Page")
-                    .padding()
-                    .background(Color.orange)
-                    .foregroundColor(.white)
-                    .cornerRadius(10)
-            }
+            .background(Color.white.edgesIgnoringSafeArea(.all))
         }
     }
 }
-
 struct InitialView_Previews: PreviewProvider {
     static var previews: some View {
         NavigationView {
@@ -359,15 +375,14 @@ struct ContentView: View {
             return basementLevelAnnotations
         }
     }
-    
     struct LegendView: View {
         @Environment(\.dismiss) var dismiss // Access the dismiss environment action
         
         var body: some View {
             NavigationView {
                 List {
-                    NavigationLink("MUSTAFA V. KOÇ BİNASI", destination: MustafaKocView())
-                    NavigationLink("TERSHANE", destination: TershaneView())
+                    NavigationLink("MUSTAFA V. KOÇ BİNASI (Mustafa V. Koç Building)", destination: MustafaKocView())
+                    NavigationLink("TERSHANE (Shipyard)", destination: TershaneView())
                 }
                 .navigationTitle("Legend")
                 .toolbar {
@@ -377,6 +392,7 @@ struct ContentView: View {
                         }
                     }
                 }
+                .foregroundColor(.burgundy) // Set title color to burgundy
             }
         }
     }
@@ -385,12 +401,14 @@ struct ContentView: View {
         var body: some View {
             NavigationView {
                 List {
-                    NavigationLink("ALT KAT", destination: MustafaKocAlt())
-                    NavigationLink("GİRİŞ KATI", destination: MustafaKocGiris())
-                    NavigationLink("ÜST KAT", destination: MustafaKocUst())
+                    NavigationLink("ALT KAT (Downstairs)", destination: MustafaKocAlt())
+                    NavigationLink("GİRİŞ KATI (Entrance Floor)", destination: MustafaKocGiris())
+                    NavigationLink("ÜST KAT (Upper Floor)", destination: MustafaKocUst())
                 }
-                .navigationTitle("MUSTAFA V. K0Ç")
+                .navigationTitle("MUSTAFA V. KOÇ")
             }
+            .foregroundColor(.burgundy) // Set title color to burgundy
+
         }
     }
 
@@ -398,124 +416,126 @@ struct ContentView: View {
         var body: some View {
             NavigationView {
                 List {
-                    NavigationLink("GİRİŞ KATI", destination: TershaneGiris())
-                    NavigationLink("ÜST KAT", destination: TershaneUst())
-                    NavigationLink("AÇIK TEŞHİR ALANI", destination: TershaneAcik())
+                    NavigationLink("GİRİŞ KATI (Entrance Floor)", destination: TershaneGiris())
+                    NavigationLink("ÜST KAT (Upper Floor)", destination: TershaneUst())
+                    NavigationLink("AÇIK TEŞHİR ALANI (Open-Air Exhibition Area)", destination: TershaneAcik())
                 }
                 .navigationTitle("TERSHANE")
             }
+            .foregroundColor(.burgundy) // Set title color to burgundy
+
         }
     }
-    
+
     struct MustafaKocAlt: View {
         var body: some View {
             List {
-                Text("L15 : Havacılık")
-                Text("L16 : Restorasyon Atölyesi")
-                Text("L17 : Lokomotif ve Otomobil Modelleri")
-                Text("L18 : Oyuncaklar")
-                Text("L19 : Denizcilik Modelleri")
-                Text("L20 : Sinema Bölümü")
-                Text("L21 : Matbaa Makineleri")
+                Text("L15 : Havacılık (Aviation)")
+                Text("L16 : Restorasyon Atölyesi (Restoration Workshop)")
+                Text("L17 : Lokomotif ve Otomobil Modelleri (Locomotive and Car Models)")
+                Text("L18 : Oyuncaklar (Toys)")
+                Text("L19 : Denizcilik Modelleri (Maritime Models)")
+                Text("L20 : Sinema Bölümü (Cinema Section)")
+                Text("L21 : Matbaa Makineleri (Printing Machines)")
             }
-            .navigationTitle("ALT KAT")
+            .navigationTitle("ALT KAT (Downstairs)")
         }
     }
-    
+
     struct MustafaKocGiris: View {
         var body: some View {
             List {
-                Text("L01 : Buharlı Makine Modelleri")
-                Text("L02 : Buharlı Gemi Makine Modelleri")
-                Text("L03 : Sıcak Hava ve İçten Yanmalı Motor Modelleri")
-                Text("L04 : Buharlı Makine Modelleri")
-                Text("L05 : Buharlı Silindirler ve Çekici Makine Modelleri")
-                Text("L06 : Buharlı Makine Modelleri")
-                Text("L07 : Lokomotif Modelleri ve Kalender Vapuru Makinesi")
+                Text("L01 : Buharlı Makine Modelleri (Steam Engine Models)")
+                Text("L02 : Buharlı Gemi Makine Modelleri (Steamship Engine Models)")
+                Text("L03 : Sıcak Hava ve İçten Yanmalı Motor Modelleri (Hot Air and Internal Combustion Engine Models)")
+                Text("L04 : Buharlı Makine Modelleri (Steam Engine Models)")
+                Text("L05 : Buharlı Silindirler ve Çekici Makine Modelleri (Steam Cylinders and Tractor Engine Models)")
+                Text("L06 : Buharlı Makine Modelleri (Steam Engine Models)")
+                Text("L07 : Lokomotif Modelleri ve Kalender Vapuru Makinesi (Locomotive Models and Kalender Steamboat Engine)")
             }
-            .navigationTitle("GİRİŞ KATI")
+            .navigationTitle("GİRİŞ KATI (Entrance Floor)")
         }
     }
-    
+
     struct MustafaKocUst: View {
         var body: some View {
             List {
-                Text("L08 - L11 : Bilimsel Aletler")
-                Text("L12 - L14 : İletişim Aletleri")
+                Text("L08 - L11 : Bilimsel Aletler (Scientific Instruments)")
+                Text("L12 - L14 : İletişim Aletleri (Communication Instruments)")
             }
-            .navigationTitle("ÜST KAT")
+            .navigationTitle("ÜST KAT (Upper Floor)")
         }
     }
-    
+
     struct TershaneGiris: View {
         var body: some View {
             List {
-                Text("T02 : Sualtı Bölümü")
-                Text("T03 : Astronomi / Enerji / Fen Atölyeleri")
-                Text("T06 : Erdoğan Gönül Galerisi | Otomobiller")
-                Text("T11 : Dr. Bülent Bulgurlu Galerisi | Otomobiller")
-                Text("T12 : Buhar Makineleri | Dizel Motorları")
-                Text("T13 : Araser Zeytinyağı Fabrikası")
-                Text("T14 : Marangozhane")
-                Text("T15 : Gemi Makineleri")
-                Text("T16 : Tarihi Kızak")
-                Text("T17 : Nostaljik Dükkanlar")
-                Text("T17a : Haliç Oyuncakçısı")
-                Text("T17b : Gemi Donatımı")
-                Text("T17c : Dakik Saat")
-                Text("T17d : Dövme Demir")
-                Text("T17e : Ismarlama Kundura")
-                Text("T17f : Fecri Aletler")
-                Text("T17g : Şifa Eczanesi")
-                Text("T18 : Gemi Buhar Makinesi")
-                Text("T19 : Denizcilik")
-                Text("T19a : Balıkçı Barınağı")
-                Text("T19b : Tekneler")
-                Text("T19c : Kosta Usta Motor Tamir Atölyesi")
-                Text("T19d : Ayvansaray Sandal Yapım Atölyesi")
-                Text("T20 : Aydın Çubukçu Galerisi - Raylı Ulașım")
+                Text("T02 : Sualtı Bölümü (Underwater Section)")
+                Text("T03 : Astronomi / Enerji / Fen Atölyeleri (Astronomy / Energy / Science Workshops)")
+                Text("T06 : Erdoğan Gönül Galerisi | Otomobiller (Erdoğan Gönül Gallery | Automobiles)")
+                Text("T11 : Dr. Bülent Bulgurlu Galerisi | Otomobiller (Dr. Bülent Bulgurlu Gallery | Automobiles)")
+                Text("T12 : Buhar Makineleri | Dizel Motorları (Steam Engines | Diesel Engines)")
+                Text("T13 : Araser Zeytinyağı Fabrikası (Araser Olive Oil Factory)")
+                Text("T14 : Marangozhane (Carpentry Shop)")
+                Text("T15 : Gemi Makineleri (Ship Engines)")
+                Text("T16 : Tarihi Kızak (Historical Sledge)")
+                Text("T17 : Nostaljik Dükkanlar (Nostalgic Shops)")
+                Text("T17a : Haliç Oyuncakçısı (Golden Horn Toymaker)")
+                Text("T17b : Gemi Donatımı (Ship Fitting)")
+                Text("T17c : Dakik Saat (Clockmaker)")
+                Text("T17d : Dövme Demir (Blacksmith)")
+                Text("T17e : Ismarlama Kundura (Custom Shoes)")
+                Text("T17f : Fecri Aletler (Scientific Tools)")
+                Text("T17g : Şifa Eczanesi (Healing Pharmacy)")
+                Text("T18 : Gemi Buhar Makinesi (Ship Steam Engine)")
+                Text("T19 : Denizcilik (Maritime)")
+                Text("T19a : Balıkçı Barınağı (Fishermen's Harbor)")
+                Text("T19b : Tekneler (Boats)")
+                Text("T19c : Kosta Usta Motor Tamir Atölyesi (Kosta Usta Motor Repair Workshop)")
+                Text("T19d : Ayvansaray Sandal Yapım Atölyesi (Ayvansaray Boat Building Workshop)")
+                Text("T20 : Aydın Çubukçu Galerisi - Raylı Ulaşım (Aydın Çubukçu Gallery - Rail Transport)")
             }
-            .navigationTitle("GİRİŞ KATI")
+            .navigationTitle("GİRİŞ KATI (Entrance Floor)")
         }
     }
-    
+
     struct TershaneUst: View {
         var body: some View {
             List {
-                Text("T01 : Rahmi M. Koç Galerisi Atatürk Koleksiyonu")
-                Text("T04 : Renkli Matematik Dünyası")
-                Text("T05 : Anasıfı Eğitim Atölyesi")
-                Text("T07 : Motosikletler")
-                Text("T08 : Bebek Arabaları")
-                Text("T09 : Bisikletler")
-                Text("T10 : Kağnılar | At Arabaları | Kızaklar")
-                Text("T14 : Torna Tezgahları")
-                Text("T19e : Kayıklar | Dıştan Takma Motorlar")
+                Text("T01 : Rahmi M. Koç Galerisi Atatürk Koleksiyonu (Rahmi M. Koç Gallery Atatürk Collection)")
+                Text("T04 : Renkli Matematik Dünyası (Colorful World of Mathematics)")
+                Text("T05 : Anasıfı Eğitim Atölyesi (Preschool Education Workshop)")
+                Text("T07 : Motosikletler (Motorcycles)")
+                Text("T08 : Bebek Arabaları (Baby Carriages)")
+                Text("T09 : Bisikletler (Bicycles)")
+                Text("T10 : Kağnılar | At Arabaları | Kızaklar (Ox Carts | Horse Carts | Sledges)")
+                Text("T14 : Torna Tezgahları (Lathe Machines)")
+                Text("T19e : Kayıklar | Dıştan Takma Motorlar (Boats | Outboard Motors)")
             }
-            .navigationTitle("ÜST KAT")
+            .navigationTitle("ÜST KAT (Upper Floor)")
         }
     }
-    
+
     struct TershaneAcik: View {
         var body: some View {
             List {
-                Text("Anadol Otomobiller")
-                Text("Yarış Otomobilleri")
-                Text("İtfaiye Arabaları")
-                Text("Traktörler")
-                Text("Sovyet Otomobilleri")
-                Text("Dört Çekerli Araçlar")
-                Text("Uçaklar")
+                Text("Anadol Otomobiller (Anadol Cars)")
+                Text("Yarış Otomobilleri (Race Cars)")
+                Text("İtfaiye Arabaları (Fire Engines)")
+                Text("Traktörler (Tractors)")
+                Text("Sovyet Otomobilleri (Soviet Cars)")
+                Text("Dört Çekerli Araçlar (Four-Wheel Drive Vehicles)")
+                Text("Uçaklar (Aircrafts)")
                 Text("B-24 Harley's Harem")
                 Text("Jet Provost")
                 Text("Hamsa Jet")
-                Text("Eğitim Uçağı")
-                Text("Tarım Uçağı")
-                Text("Atlıkarınca")
-                Text("Hasköy Sütlüce Demiryolu İstasyonu")
-                Text("Seka Vinci")
+                Text("Eğitim Uçağı (Training Aircraft)")
+                Text("Tarım Uçağı (Agricultural Aircraft)")
+                Text("Atlıkarınca (Carousel)")
+                Text("Hasköy Sütlüce Demiryolu İstasyonu (Hasköy Sütlüce Railway Station)")
+                Text("Seka Vinci (Seka Crane)")
             }
-            .navigationTitle("AÇIK TEŞHİR ALANI")
+            .navigationTitle("AÇIK TEŞHİR ALANI (Open-Air Exhibition Area)")
         }
     }
 
@@ -530,7 +550,7 @@ struct ContentView: View {
                     Button(action: { currentFloor = .basementLevel }) {
                         Text("Downstairs")
                             .padding()
-                            .background(currentFloor == .basementLevel ? Color.blue : Color.gray)
+                            .background(currentFloor == .basementLevel ? Color.blue : Color.burgundy)
                             .foregroundColor(.white)
                             .clipShape(Capsule())
                     }
@@ -538,7 +558,7 @@ struct ContentView: View {
                     Button(action: { currentFloor = .groundLevel }) {
                         Text("Ground Level")
                             .padding()
-                            .background(currentFloor == .groundLevel ? Color.blue : Color.gray)
+                            .background(currentFloor == .groundLevel ? Color.blue : Color.burgundy)
                             .foregroundColor(.white)
                             .clipShape(Capsule())
                     }
@@ -546,13 +566,13 @@ struct ContentView: View {
                     Button(action: { currentFloor = .firstFloor }) {
                         Text("Upstairs")
                             .padding()
-                            .background(currentFloor == .firstFloor ? Color.blue : Color.gray)
+                            .background(currentFloor == .firstFloor ? Color.blue : Color.burgundy)
                             .foregroundColor(.white)
                             .clipShape(Capsule())
                     }
                 }
                 .padding()
-                .background(Color.black.opacity(0.5))
+                .background(Color.burgundy.opacity(0.5))
                 .clipShape(Capsule())
 
                 Spacer()
@@ -569,7 +589,7 @@ struct ContentView: View {
                             .font(.system(size: 30))
                             .foregroundColor(.white)
                             .padding()
-                            .background(Color.black.opacity(0.7))
+                            .background(Color.burgundy.opacity(0.7))
                             .clipShape(Circle())
                     }
 
@@ -583,7 +603,7 @@ struct ContentView: View {
                             .font(.system(size: 30))
                             .foregroundColor(.white)
                             .padding()
-                            .background(Color.black.opacity(0.7))
+                            .background(Color.burgundy.opacity(0.7))
                             .clipShape(Circle())
                     }
                 }
@@ -599,7 +619,7 @@ struct ContentView: View {
                                }) {
                                    Text("Legend")
                                        .padding()
-                                       .background(Color.black.opacity(0.7))
+                                       .background(Color.burgundy.opacity(0.7))
                                        .foregroundColor(.white)
                                        .clipShape(Capsule())
                                }
@@ -623,83 +643,96 @@ struct ContentView_Previews: PreviewProvider {
 struct ContentPage: View {
     let exhibits: [Exhibit] = [
         Exhibit(
-            name: "Atatürk Bölümü",
-            description: "Bu bölümde sergilenen objeler, Türkiye Cumhuriyeti’nin kurucusu ve ilk Cumhurbaşkanı Mustafa Kemal Atatürk’e (1881-1938) aittir. Koleksiyon, daha çok Kurtuluş Savaşı’nda önemli rol oynayan ve daha sonra Atatürk’ün yakınları ve çalışma arkadaşları arasına katılan Albay Halil Nuri Yurdakul tarafından bir araya getirilmiştir. Oğlu Prof. Dr. Yurdakul Yurdakul ve gelini Sayın Ayşe Acatay Yurdakul tarafından bağışlanmıştır.",
+            name: "Atatürk Section",
+            description: "The objects displayed in this section belong to Mustafa Kemal Atatürk (1881-1938), the founder and first President of the Republic of Turkey. The collection was mainly assembled by Colonel Halil Nuri Yurdakul, who played a significant role in the War of Independence and later became part of Atatürk's close circle. The collection was donated by his son Prof. Dr. Yurdakul Yurdakul and his daughter-in-law Mrs. Ayşe Acatay Yurdakul.",
             coordinate: CLLocationCoordinate2D(latitude: 37.7749, longitude: -122.4194)
         ),
         Exhibit(
-            name: "Demir Yolu Ulaşımı",
-            description: "Müzenin raylı ulaşım kısmı iki bölümden oluşmaktadır. Aralarında Sultan Abdülaziz’in Saltanat Vagonu ve Kadıköy-Moda Tramvayı’nın da yer aldığı demir yolu araçları, ince işçilikli lokomotif ve tramvay modellerinin yanı sıra, demir yolları ile ilgili çeşitli fotoğraflar ve efemeralar sergilenmektedir.",
+            name: "Railway Transportation",
+            description: "The museum's railway transportation section consists of two parts. It displays railway vehicles, including Sultan Abdülaziz’s Imperial Train and the Kadıköy-Moda Tramway, as well as finely crafted models of locomotives and trams, along with various photos and ephemera related to railways.",
             coordinate: CLLocationCoordinate2D(latitude: 37.7849, longitude: -122.4094)
         ),
         Exhibit(
-            name: "Havacılık",
-            description: "Wright Kardeşlerin planör modelinden, tüm zamanların en önemli uçaklarından olan Douglas DC-3 ve F 104S Starfighter avcı uçağına kadar havacılık tarihinin önemli örneklerinin yer aldığı koleksiyon Mustafa V. Koç Binası ve Açık Alan’da görülebilir.",
+            name: "Aviation",
+            description: "The collection, featuring significant examples of aviation history, includes the Wright Brothers' glider model, the iconic Douglas DC-3, and the F-104S Starfighter fighter jet. This collection can be seen in the Mustafa V. Koç Building and the Open Area.",
             coordinate: CLLocationCoordinate2D(latitude: 37.7949, longitude: -122.3994)
         ),
         Exhibit(
-            name: "Kara Yolu Ulaşımı",
-            description: "Bu bölümde, kara yolu ulaşımının 1800’lerden günümüze kadar olan gelişimine yön veren; at arabaları, faytonlar, çocuk arabaları, bisikletler, motosikletler, tarım objeleri, klasik otomobiller, otomobil modelleri, itfaiye araçları ve buharlı kara yolu araçlarının nadir bulunan örnekleri yer almaktadır.",
+            name: "Road Transportation",
+            description: "This section displays rare examples of road transportation evolution from the 1800s to the present, including horse-drawn carriages, coaches, children's carriages, bicycles, motorcycles, agricultural objects, classic cars, car models, fire trucks, and steam-powered road vehicles.",
             coordinate: CLLocationCoordinate2D(latitude: 37.7649, longitude: -122.4294)
         ),
         Exhibit(
-            name: "Modeller ve Oyuncaklar",
-            description: "1700’lerden günümüze kadar olan tarih aralığına ait, ince işçilikle yapılmış, çoğu türünün nadir örneklerinden olan ölçekli modeller, müze koleksiyonu içinde çok önemli bir yer tutmaktadır. Buharlı Makineler, Raylı Ulaşım, Denizcilik, Havacılık ve Karayolu Ulaşımı Bölümleri içinde, bu bölümlere ait önde gelen yapımcılara ait seçkin model koleksiyonları görülebilir. Müze koleksiyonunda yer alan minyatür objeler, çeşitli ülke ve dönemlere ait oyuncaklar da Modeller başlığı altında verilmiştir. Oyuncaklar ağırlıklı olarak Mustafa V. Koç Binası’nda sergilenmektedir. Ziyaretçilere büyülü bir dünyanın kapısını aralayan envai çeşit minyatür obje ve bebek evleri Tersane - Ana Giriş’te görülebilir.",
+            name: "Models and Toys",
+            description: "Scale models from the 1700s to the present, many of which are rare examples of their kind, are a significant part of the museum's collection. Prominent model collections related to steam engines, railway transportation, maritime, aviation, and road transportation can be seen in the respective sections. The collection also includes miniature objects and toys from various countries and periods, with toys mostly displayed in the Mustafa V. Koç Building. Various miniature objects and dollhouses, opening a door to a magical world, can be seen in the Shipyard - Main Entrance.",
             coordinate: CLLocationCoordinate2D(latitude: 37.7649, longitude: -122.4294)
-        ),Exhibit(
-            name: "Yaşayan Geçmiş",
-            description: "19. yüzyıla ait dükkân ve atölyelerin gerçeğe uygun olarak yeniden canlandırıldığı bölümlerde aynı zamanda koleksiyonun ilgi çekici pek çok parçası da sergilenmektedir. Tornahane, Zeytinyağı Fabrikası, Film Seti, Kaptan Köşkü, Balıkçı Barınağı, Kosta Usta Motor Tamir Atölyesi, Sandal Yapım Atölyesi, Fenni Aletler Dükkanı, Eczane, Kunduracı, Demirci, Saat Yapımcısı, Gemi Donatım ve Oyuncakçı, Mustafa V. Koç, Tersane Binası ve Açık Alan içinde bölüm koleksiyonlarını destekleyecek şekilde konumlandırılmıştır.",
+        ),
+        Exhibit(
+            name: "Living Past",
+            description: "Sections where 19th-century shops and workshops are recreated in a lifelike manner also display many intriguing pieces from the collection. The sections include a lathe shop, olive oil factory, film set, captain’s cabin, fisherman’s dock, motor repair workshop, boatbuilding workshop, tools shop, pharmacy, shoemaker, blacksmith, clockmaker, ship equipment and toy shops, and more, all strategically located to support the collection.",
             coordinate: CLLocationCoordinate2D(latitude: 37.7649, longitude: -122.4294)
-        ),Exhibit(
-            name: "Bilimsel Aletler",
-            description: "14. yüzyıla ait gök küresi ile 19. yüzyıla ait transit teleskobun da bulunduğu, önemli gözlem ve ölçüm aletlerini kapsayan koleksiyon, bilim tarihine ışık tutmaktadır. Koleksiyonun tamamı, Mustafa V. Koç Binası’nda görülebilir.",
+        ),
+        Exhibit(
+            name: "Scientific Instruments",
+            description: "This collection, which includes important observation and measurement instruments such as a 14th-century celestial globe and a 19th-century transit telescope, sheds light on the history of science. The entire collection can be viewed in the Mustafa V. Koç Building.",
             coordinate: CLLocationCoordinate2D(latitude: 37.7649, longitude: -122.4294)
-        ),Exhibit(
-            name: "Denizcilik",
-            description: "Rahmi M. Koç Müzesi, denizcilik objeleri ve modellerinden oluşan geniş bir koleksiyona sahiptir. Tersane’deki bu bölümde bir grup model, birçok gerçek boyutta tekne ve yat, kıçtan takma motorlardan oluşan değerli bir koleksiyon ve nadir rastlanan bir “Amphicar” yer almaktadır. Müze koleksiyonunun en beğenilen öğelerinden biri olan etkileyici Boğaziçi Gezinti Kayığı’na ek olarak küçük kayıklar, kanolar ve diğer küçük tekneler de bu bölümde sergilenmektedir.",
+        ),
+        Exhibit(
+            name: "Maritime",
+            description: "The Rahmi M. Koç Museum has an extensive collection of maritime objects and models. In the Shipyard section, there is a collection of models, several full-size boats and yachts, valuable items like outboard motors, and a rare 'Amphicar.' Among the museum’s most admired items is the impressive Bosphorus Touring Boat, along with smaller boats, canoes, and other small vessels.",
             coordinate: CLLocationCoordinate2D(latitude: 37.7649, longitude: -122.4294)
-        ),Exhibit(
-            name: "İletişim Araçları",
-            description: "Bilimin endüstri ile birleşmesi sonucu gerçekleşen iletişim devrimi ile ortaya çıkan; telgraf, telefon, diktafon, gramafon, kamera ve televizyon gibi önemli iletişim aletlerinin çok nadir örneklerinin bir araya geldiği koleksiyon, Mustafa V. Koç Binası’nda görülebilir.",
+        ),
+        Exhibit(
+            name: "Communication Tools",
+            description: "The collection, featuring rare examples of important communication tools that emerged with the revolution of communication through the fusion of science and industry, includes items such as the telegraph, telephone, dictaphone, gramophone, camera, and television. This collection can be viewed in the Mustafa V. Koç Building.",
             coordinate: CLLocationCoordinate2D(latitude: 37.7649, longitude: -122.4294)
-        ),Exhibit(
-            name: "Makineler",
-            description: "Türkiye’de ve yurt dışında üretilmiş buharlı ve dizel motorların yer aldığı koleksiyon, endüstrinin gelişimine önemli bir ışık tutmaktadır. Mustafa V. Koç Binası’nda yer alan Kalender Gemisi’nin buharlı ana makinesi ve Tersane Binası’ndaki Marshall seyyar buhar makinesi, türlerinin önemli örnekleri arasında yer almaktadır.",
+        ),
+        Exhibit(
+            name: "Machines",
+            description: "The collection of steam and diesel engines, produced both in Turkey and abroad, sheds important light on the development of industry. Notable examples include the steam engine of the Kalender Ship in the Mustafa V. Koç Building and the Marshall portable steam engine in the Shipyard Building.",
             coordinate: CLLocationCoordinate2D(latitude: 37.7649, longitude: -122.4294)
-        ),Exhibit(
-            name: "Kara Yolu Ulaşımı",
-            description: "Bu bölümde, farklı içerikleri barındıran koleksiyonlar bulunmaktadır. Anamorfoz Rahmi M. Koç Portresi, Mehmet Memduh Önger Marklin Tren Koleksiyonu, Raoul Cabib Koleksiyonu ve daha nicesi bulunmaktadır.",
+        ),
+        Exhibit(
+            name: "Road Transportation (Additional Collection)",
+            description: "This section contains various collections such as the Anamorphosis Rahmi M. Koç Portrait, Mehmet Memduh Önger Marklin Train Collection, Raoul Cabib Collection, and many others.",
             coordinate: CLLocationCoordinate2D(latitude: 37.7649, longitude: -122.4294)
-        ),Exhibit(
-            name: "Fenerbahçe Vapuru",
-            description: "Fenerbahçe Vapuru, eşi Dolmabahçe Vapuru ile birlikte 1952'de İskoçya Glasgow'da William Denny&Brothers Dumbarton tezgahlarında inşa edilmiştir. “Bahçe tipi” vapurların bir üyesi olan vapur, Şirket-i Hayriye'de (Bugünkü adıyla Türkiye Denizcilik İşletmeleri) 14 Mayıs 1953 tarihinde hizmete girmiştir. Uzun yıllar Sirkeci-Adalar-Yalova-Çınarcık arasında sefer yapan vapur, 22 Aralık 2008 tarihinde Veda Turu isimli son seferini gerçekleştirmiştir. Her biri 1.500 beygir gücünde 2 adet Sulzer dizel motoru bulunan, çift uskurlu ve saatte 18 mil hız yapabilen vapur, kocaman bacası ve özellikle ahşap aksamı ile göz doldurmaktadır. 2009 yılında Rahmi M. Koç Müzesi’ne gelişinden itibaren müze vapur olarak ziyarete açılan Fenerbahçe Vapuru, Yalvaç Ural Oyuncak Koleksiyonu’na ev sahipliği yapmaktadır. Bunun yanı sıra geçici sergilere ve müze eğitim çalışmalarına yer verilmektedir. Fenerbahçe Vapuru nostaljik kafesinde ise ziyaretçiler Haliç üzerinde keyifli anlar yaşamaktadır.Fenerbahçe Vapuru, İstanbul Büyükşehir Belediyesi tarafından süreli olarak verilmiştir.",
+        ),
+        Exhibit(
+            name: "Fenerbahçe Ferry",
+            description: "The Fenerbahçe Ferry, built in 1952 in Glasgow, Scotland, at the William Denny & Brothers Dumbarton yard, was put into service on May 14, 1953, with the Şirket-i Hayriye (now known as the Turkish Maritime Lines). For many years, it operated between Sirkeci, the Islands, Yalova, and Çınarcık. The ferry, equipped with two 1,500-horsepower Sulzer diesel engines, has a large chimney and wooden components. Since its arrival at the Rahmi M. Koç Museum in 2009, it has served as a museum ferry and is home to the Yalvaç Ural Toy Collection, temporary exhibits, and museum educational activities. Visitors can also enjoy the nostalgic café onboard, offering pleasant moments overlooking the Golden Horn. The ferry is periodically granted by the Istanbul Metropolitan Municipality.",
             coordinate: CLLocationCoordinate2D(latitude: 37.7649, longitude: -122.4294)
         ),
         // Add more exhibits as needed
     ]
 
+
     var body: some View {
         ScrollView {
             VStack(alignment: .leading, spacing: 20) {
-                ForEach(exhibits, id: \.name) { exhibit in
-                    VStack(alignment: .leading, spacing: 10) {
-                        Text(exhibit.name)
-                            .font(.title2)
-                            .fontWeight(.bold)
-                            .foregroundColor(.purple)
-                        
-                        Text(exhibit.description)
-                            .font(.body)
-                            .foregroundColor(.black)
-                            .lineLimit(nil)
+                Text("  Exhibits")
+                                .font(.largeTitle)
+                                .fontWeight(.bold)
+                                .foregroundColor(Color.burgundy)
+                                .padding(.bottom, 20) // Adds space below the title
+
+                            ForEach(exhibits, id: \.name) { exhibit in
+                                VStack(alignment: .leading, spacing: 10) {
+                                    Text(exhibit.name)
+                                        .font(.title2)
+                                        .fontWeight(.bold)
+                                        .foregroundColor(.burgundy)
+                                    
+                                    Text(exhibit.description)
+                                        .font(.body)
+                                        .foregroundColor(.black)
+                                        .lineLimit(nil)
+                                }
+                                .padding(.horizontal)
+                            }
+                        }
+                        .padding(.top)
                     }
-                    .padding(.horizontal)
                 }
-            }
-            .padding(.top)
-        }
-        .navigationTitle("Exhibits")
-    }
 }
 
 struct ContentPage_Previews: PreviewProvider {
@@ -741,11 +774,13 @@ struct PreferencesView: View {
                     Button("OK") {
                         showSuggestedRooms = true
                     }
+                    .foregroundColor(Color.burgundy)
                 }
             }
             .sheet(isPresented: $showSuggestedRooms) {
                 SuggestedRoomsView(preferences: preferences)
             }
+            
         }
     }
 
